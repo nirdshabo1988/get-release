@@ -12,7 +12,8 @@ export function findLatestRelease(releases: any[]): any {
 
     // Find the latest release by `published_at`
     releases.forEach(release => {
-      const versionNumber = 1*(release.tag_name.split("-")[1]);
+      const tagNames = release.tag_name.split("-");
+      const versionNumber = 1*(tagNames[tagNames.length-1]);
         const publishedDate: number = versionNumber;
         if (result == null || latest < publishedDate) {
             result = release;

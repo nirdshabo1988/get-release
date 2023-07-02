@@ -70,7 +70,7 @@ export function getInputs(): ReleaseInputs {
             result.prerelease = getBooleanInput(Inputs.PreRelease, {required: false});
         }
     }
-    const versionNumber = tag.split("-")[1];
+    const versionNumber = tag.split("-")[tag.split("-").length-1];
     result.version = parseInt(versionNumber, 10);
     result.next_version = result.version + 1;
     result.debug = getBooleanInput(Inputs.Debug, {required: false});

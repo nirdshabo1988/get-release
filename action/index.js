@@ -9707,7 +9707,8 @@ exports.isSuccessStatusCode = isSuccessStatusCode;
 function findLatestRelease(releases) {
     let result, latest = 0;
     releases.forEach(release => {
-        const versionNumber = 1 * (release.tag_name.split("-")[1]);
+        const tagNames = release.tag_name.split("-");
+        const versionNumber = 1 * (tagNames[tagNames.length - 1]);
         const publishedDate = versionNumber;
         if (result == null || latest < publishedDate) {
             result = release;
@@ -9871,7 +9872,7 @@ function getInputs() {
             result.prerelease = getBooleanInput(constants_1.Inputs.PreRelease, { required: false });
         }
     }
-    const versionNumber = tag.split("-")[1];
+    const versionNumber = tag.split("-")[tag.split("-").length - 1];
     result.version = parseInt(versionNumber, 10);
     result.next_version = result.version + 1;
     result.debug = getBooleanInput(constants_1.Inputs.Debug, { required: false });
