@@ -9650,6 +9650,7 @@ var Outputs;
     Outputs["PublishedAt"] = "published_at";
     Outputs["Body"] = "body";
     Outputs["Version"] = "version";
+    Outputs["NextVersion"] = "next_version";
 })(Outputs = exports.Outputs || (exports.Outputs = {}));
 
 
@@ -9711,6 +9712,7 @@ function findLatestRelease(releases) {
         if (result == null || latest < publishedDate) {
             result = release;
             result.version = versionNumber;
+            result.next_version = versionNumber + 1;
             result.Version = versionNumber;
             latest = publishedDate;
         }
@@ -9743,7 +9745,7 @@ exports.handlerError = handlerError;
                             tag: inputs.tag
                         });
                         if (isSuccessStatusCode(releaseResponse.status))
-                            (0, io_helper_1.setOutputs)(Object.assign({ version: inputs.version }, releaseResponse.data), inputs.debug);
+                            (0, io_helper_1.setOutputs)(Object.assign({ version: inputs.version, next_version: inputs.next_version }, releaseResponse.data), inputs.debug);
                         else
                             throw new Error(`Unexpected http ${releaseResponse.status} during get release`);
                     }
@@ -9871,6 +9873,7 @@ function getInputs() {
     }
     const versionNumber = tag.split("-")[1];
     result.version = parseInt(versionNumber, 10);
+    result.next_version = result.version + 1;
     result.debug = getBooleanInput(constants_1.Inputs.Debug, { required: false });
     result.throwing = getBooleanInput(constants_1.Inputs.Throwing, { required: false });
     return result;

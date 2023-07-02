@@ -12,7 +12,7 @@ export interface ReleaseInputs {
     pattern: RegExp;
     prerelease: boolean;
     version: number;
-    nextVersion: number;
+    next_version: number;
     debug: boolean;
     throwing: boolean;
 }
