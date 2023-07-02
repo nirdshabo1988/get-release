@@ -50,6 +50,8 @@ outputs:
     description: The release name
   tag_name:
     description: The git tag associated with the release
+  next_version:
+    description: The next version
   version:
     description: The release version
   draft:
