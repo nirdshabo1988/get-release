@@ -24,5 +24,6 @@ export enum Outputs {
     CreatedAt = 'created_at',
     PublishedAt = 'published_at',
     Body = 'body',
-    Version = 'version'
+    Version = 'version',
+    NextVersion = 'next_version'
 }

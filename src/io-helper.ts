@@ -12,6 +12,7 @@ export interface ReleaseInputs {
     pattern: RegExp;
     prerelease: boolean;
     version: number;
+    nextVersion: number;
     debug: boolean;
     throwing: boolean;
 }
@@ -71,6 +72,7 @@ export function getInputs(): ReleaseInputs {
     }
     const versionNumber = tag.split("-")[1];
     result.version = parseInt(versionNumber, 10);
+    result.next_version = result.version + 1;
     result.debug = getBooleanInput(Inputs.Debug, {required: false});
     result.throwing = getBooleanInput(Inputs.Throwing, {required: false});
 

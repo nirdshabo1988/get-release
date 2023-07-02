@@ -17,6 +17,7 @@ export function findLatestRelease(releases: any[]): any {
         if (result == null || latest < publishedDate) {
             result = release;
             result.version = versionNumber;
+            result.next_version = versionNumber + 1;
             result.Version = versionNumber;
             latest = publishedDate;
         }
@@ -51,7 +52,7 @@ export function handlerError(message: string, throwing: boolean) {
                             tag: inputs.tag
                         });
                     if (isSuccessStatusCode(releaseResponse.status))
-                        setOutputs({version:inputs.version,...releaseResponse.data}, inputs.debug);
+                        setOutputs({version:inputs.version,next_version:inputs.next_version,...releaseResponse.data}, inputs.debug);
                     else
                         throw new Error(`Unexpected http ${releaseResponse.status} during get release`);
                 } catch (e: any) {
