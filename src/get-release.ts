@@ -12,9 +12,12 @@ export function findLatestRelease(releases: any[]): any {
 
     // Find the latest release by `published_at`
     releases.forEach(release => {
-        const publishedDate: number = release.published_at ? Date.parse(release.published_at) : 0;
+      const versionNumber = 1*(release.tag_name.split("-")[1]);
+        const publishedDate: number = versionNumber;
         if (result == null || latest < publishedDate) {
             result = release;
+            result.version = versionNumber;
+            result.Version = versionNumber;
             latest = publishedDate;
         }
     });
@@ -47,7 +50,7 @@ export function handlerError(message: string, throwing: boolean) {
                             repo: inputs.repo,
                             tag: inputs.tag
                         });
-
+                    releaseResponse.data.Version = inputs.version;
                     if (isSuccessStatusCode(releaseResponse.status))
                         setOutputs(releaseResponse.data, inputs.debug);
                     else

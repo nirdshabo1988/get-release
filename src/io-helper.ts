@@ -11,7 +11,7 @@ export interface ReleaseInputs {
     latest: boolean;
     pattern: RegExp;
     prerelease: boolean;
-
+    version: number;
     debug: boolean;
     throwing: boolean;
 }
@@ -69,7 +69,8 @@ export function getInputs(): ReleaseInputs {
             result.prerelease = getBooleanInput(Inputs.PreRelease, {required: false});
         }
     }
-
+    const versionNumber = tag.split("-")[1];
+    result.version = parseInt(versionNumber, 10);
     result.debug = getBooleanInput(Inputs.Debug, {required: false});
     result.throwing = getBooleanInput(Inputs.Throwing, {required: false});
 
