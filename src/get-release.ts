@@ -50,9 +50,8 @@ export function handlerError(message: string, throwing: boolean) {
                             repo: inputs.repo,
                             tag: inputs.tag
                         });
-                    releaseResponse.data.Version = inputs.version;
                     if (isSuccessStatusCode(releaseResponse.status))
-                        setOutputs(releaseResponse.data, inputs.debug);
+                        setOutputs({version:inputs.version,...releaseResponse.data}, inputs.debug);
                     else
                         throw new Error(`Unexpected http ${releaseResponse.status} during get release`);
                 } catch (e: any) {
