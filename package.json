@@ -1,6 +1,6 @@
 {
   "name": "get-release",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "scripts": {
     "build": "npm run clean && tsc --project tsconfig.json",
