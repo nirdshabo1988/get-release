@@ -57,7 +57,7 @@ async function getReleases(page: number,per_page=100){
         const latestRelease: any = findLatestRelease(releaseList);
         if (isNotBlank(latestRelease)) setOutputs(latestRelease, inputs.debug);
         else {
-            return getReleases(page+1,per_page);
+            getReleases(page+1,per_page);
         }
 
 }
