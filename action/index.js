@@ -9706,9 +9706,9 @@ function isSuccessStatusCode(statusCode) {
 exports.isSuccessStatusCode = isSuccessStatusCode;
 function findLatestRelease(releases) {
     let result, latest = 0;
-    releases.forEach(release => {
+    releases.forEach((release) => {
         const tagNames = release.tag_name.split("-");
-        const versionNumber = 1 * (tagNames[tagNames.length - 1]);
+        const versionNumber = 1 * tagNames[tagNames.length - 1];
         const publishedDate = versionNumber;
         if (result == null || latest < publishedDate) {
             result = release;
@@ -9721,6 +9721,29 @@ function findLatestRelease(releases) {
     return result;
 }
 exports.findLatestRelease = findLatestRelease;
+function getReleases(page, per_page = 100) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const inputs = (0, io_helper_1.getInputs)();
+        const github = (0, github_1.getOctokit)(process.env.GITHUB_TOKEN);
+        const listResponse = yield github.rest.repos.listReleases({
+            owner: inputs.owner,
+            repo: inputs.repo,
+            page: page,
+            per_page: per_page,
+        });
+        if (isSuccessStatusCode(listResponse.status)) {
+            const releaseList = listResponse.data.filter((release) => !release.draft &&
+                (!release.prerelease || inputs.prerelease) &&
+                (!inputs.pattern || inputs.pattern.test(release.tag_name)));
+            const latestRelease = findLatestRelease(releaseList);
+            if ((0, io_helper_1.isNotBlank)(latestRelease))
+                (0, io_helper_1.setOutputs)(latestRelease, inputs.debug);
+            else {
+                getReleases(page + 1, per_page);
+            }
+        }
+    });
+}
 function handlerError(message, throwing) {
     if (throwing)
         throw new Error(message);
@@ -9736,14 +9759,13 @@ exports.handlerError = handlerError;
             core.info(`Start get release with:\n  owner: ${inputs.owner}\n  repo: ${inputs.repo}`);
             if (!inputs.latest) {
                 if ((0, io_helper_1.isBlank)(inputs.tag))
-                    handlerError('Current release not found', inputs.throwing);
+                    handlerError("Current release not found", inputs.throwing);
                 else {
                     try {
-                        const releaseResponse = yield github.rest.repos
-                            .getReleaseByTag({
+                        const releaseResponse = yield github.rest.repos.getReleaseByTag({
                             owner: inputs.owner,
                             repo: inputs.repo,
-                            tag: inputs.tag
+                            tag: inputs.tag,
                         });
                         if (isSuccessStatusCode(releaseResponse.status))
                             (0, io_helper_1.setOutputs)(Object.assign({ version: inputs.version, next_version: inputs.next_version }, releaseResponse.data), inputs.debug);
@@ -9759,29 +9781,18 @@ exports.handlerError = handlerError;
                 }
             }
             else {
-                const listResponse = yield github.rest.repos.listReleases({
-                    owner: inputs.owner,
-                    repo: inputs.repo
-                });
-                if (isSuccessStatusCode(listResponse.status)) {
-                    const releaseList = listResponse.data
-                        .filter(release => !release.draft &&
-                        (!release.prerelease || inputs.prerelease) &&
-                        (!inputs.pattern || inputs.pattern.test(release.tag_name)));
-                    const latestRelease = findLatestRelease(releaseList);
-                    if ((0, io_helper_1.isNotBlank)(latestRelease))
-                        (0, io_helper_1.setOutputs)(latestRelease, inputs.debug);
-                    else {
-                        if (!!inputs.pattern)
-                            handlerError(`No release had a tag name matching /${inputs.pattern.source}/`, inputs.throwing);
-                        else
-                            handlerError('The latest release was not found', inputs.throwing);
+                const latestRelease = yield getReleases(1, 100);
+                if ((0, io_helper_1.isNotBlank)(latestRelease))
+                    return;
+                else {
+                    if (!!inputs.pattern) {
+                        handlerError(`No release had a tag name matching /${inputs.pattern.source}/`, inputs.throwing);
                     }
+                    else
+                        handlerError("The latest release was not found", inputs.throwing);
                 }
-                else
-                    throw new Error(`Unexpected http ${listResponse.status} during get release list`);
             }
-            core.info('Get release has finished successfully');
+            core.info("Get release has finished successfully");
         }
         catch (err) {
             core.setFailed(err.message);
